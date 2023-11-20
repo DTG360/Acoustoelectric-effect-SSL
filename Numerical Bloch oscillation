@@ -1,0 +1,55 @@
+% dp/dt = -e * epsilon
+% dx/dt = (d * delta) / (2 * hbar) * sin((p * d) / hbar)
+
+% Constants
+e = 1.60219e-19;  
+epsilon = 1e6;    
+d = 1e-8;          
+delta = 0.02*1.60219e-19;      
+hbar = 1.05457e-34;  
+
+% Define the ODEs as functions
+dpdt = @(t, p, x) -e * epsilon;
+dxdt = @(t, p, x) (d * delta) / (2 * hbar) * sin((p * d) / hbar);
+
+% Set up initial conditions
+p0 = 0.0;  % Initial momentum
+x0 = 0.0;  % Initial position
+
+% Specify the time span
+tspan = [0, 4*4.13e-13];  % Start and end time based of bloch frequency
+
+% Runge-Kutta 4th order method
+h = 1.5e-15;  % Step size
+t = tspan(1):h:tspan(2);
+N = length(t);
+
+p = zeros(1, N);
+x = zeros(1, N);
+
+p(1) = p0;
+x(1) = x0;
+
+for i = 1:N-1
+    k1_p = dpdt(t(i), p(i), x(i));
+    k1_x = dxdt(t(i), p(i), x(i));
+    
+    k2_p = dpdt(t(i) + 0.5*h, p(i) + 0.5*h*k1_p, x(i) + 0.5*h*k1_x);
+    k2_x = dxdt(t(i) + 0.5*h, p(i) + 0.5*h*k1_p, x(i) + 0.5*h*k1_x);
+    
+    k3_p = dpdt(t(i) + 0.5*h, p(i) + 0.5*h*k2_p, x(i) + 0.5*h*k2_x);
+    k3_x = dxdt(t(i) + 0.5*h, p(i) + 0.5*h*k2_p, x(i) + 0.5*h*k2_x);
+    
+    k4_p = dpdt(t(i) + h, p(i) + h*k3_p, x(i) + h*k3_x);
+    k4_x = dxdt(t(i) + h, p(i) + h*k3_p, x(i) + h*k3_x);
+    
+    p(i+1) = p(i) + h/6 * (k1_p + 2*k2_p + 2*k3_p + k4_p);
+    x(i+1) = x(i) + h/6 * (k1_x + 2*k2_x + 2*k3_x + k4_x);
+end
+
+% Plot the results
+figure;
+%plot(t(10:10:end), x((10:10:end)));
+scatter(t(10:10:end), x((10:10:end)));
+xlabel('Time (t)');
+ylabel('Position (x)');
