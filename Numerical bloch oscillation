@@ -1,0 +1,21 @@
+% Define the constants
+delta = 0.02*1.60219e-19;        % Delta
+el = 1.60219e-19; 
+hbar = 1.05457e-34;         % Reduced Planck constant 
+epsilon = 1e6;      % Epsilon
+p0 = 0;           % p_0
+d = 1e-8;            % d
+x0 = 0;           % x_0 (initial condition)
+
+% Create an array of time values
+t = linspace(0, 4*4.13e-13, 10000);  % Adjust the time range and number of points as needed
+
+% Calculate the corresponding x values based on the equation
+x = (delta /(2 * el * epsilon))  * (cos((-el * epsilon * t * d + p0 * d) / hbar) - (cos(p0 * d / hbar))) + x0;
+
+% Plot x as a function of t
+plot(t, x);
+xlabel('Time (t)');
+ylabel('x');
+title('');
+grid on;
